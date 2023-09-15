@@ -35,27 +35,26 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	// 	v.RegisterValidation("currency", validCurrency)
 	// }
 
-	// server.setupRouter()
+	server.setupRouter()
 
 	return server, nil
 }
 
-// func (server *Server) setupRouter() {
-// 	router := gin.Default()
+func (server *Server) setupRouter() {
+	router := gin.Default()
 
-// 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-// 	authRoutes.GET("/accounts", server.listAccount)
-// 	authRoutes.GET("/accounts/:id", server.getAccount)
-// 	authRoutes.POST("/accounts", server.createAccount)
-// 	authRoutes.POST("/profile", server.updateProfile)
-// 	authRoutes.POST("/transfers", server.createTransfer)
+	// authRoutes.GET("/accounts", server.listAccount)
+	// authRoutes.GET("/accounts/:id", server.getAccount)
+	// authRoutes.POST("/accounts", server.createAccount)
+	// authRoutes.POST("/profile", server.updateProfile)
+	// authRoutes.POST("/transfers", server.createTransfer)
 
-// 	router.POST("/users", server.createUser)
-// 	router.POST("/users/login", server.loginUser)
+	router.POST("/auth/register", server.register)
 
-// 	server.router = router
-// }
+	server.router = router
+}
 
 // Start runs the HTTP server on a specific address
 func (server *Server) Start(address string) error {

@@ -18,11 +18,12 @@ type Hobby struct {
 }
 
 type User struct {
-	ID        int64        `json:"id"`
-	Username  string       `json:"username"`
-	Name      string       `json:"name"`
-	Email     string       `json:"email"`
-	Password  string       `json:"password"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
+	ID             int64          `json:"id"`
+	Username       string         `json:"username"`
+	Name           string         `json:"name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	ProfilePicture sql.NullString `json:"profile_picture"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      sql.NullTime   `json:"updated_at"`
 }

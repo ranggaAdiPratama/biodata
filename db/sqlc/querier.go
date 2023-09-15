@@ -17,6 +17,7 @@ type Querier interface {
 	GetHobby(ctx context.Context, userID int64) (Hobby, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	UpdateHobby(ctx context.Context, arg UpdateHobbyParams) (Hobby, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

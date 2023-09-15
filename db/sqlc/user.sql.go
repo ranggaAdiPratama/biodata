@@ -7,13 +7,14 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
 
 INSERT INTO
     users (username, name, email, password)
-VALUES ($1, $2, $3, $4) RETURNING id, username, name, email, password, created_at, updated_at
+VALUES ($1, $2, $3, $4) RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -37,6 +38,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Name,
 		&i.Email,
 		&i.Password,
+		&i.ProfilePicture,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -45,7 +47,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const getUser = `-- name: GetUser :one
 
-SELECT id, username, name, email, password, created_at, updated_at FROM users WHERE id = $1 LIMIT 1
+SELECT id, username, name, email, password, profile_picture, created_at, updated_at FROM users WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
@@ -57,6 +59,50 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.Name,
 		&i.Email,
 		&i.Password,
+		&i.ProfilePicture,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+
+INSERT INTO
+    users (
+        username,
+        name,
+        email,
+        password,
+        profile_picture
+    )
+VALUES ($1, $2, $3, $4, $5) RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
+`
+
+type UpdateUserParams struct {
+	Username       string         `json:"username"`
+	Name           string         `json:"name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	ProfilePicture sql.NullString `json:"profile_picture"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.Username,
+		arg.Name,
+		arg.Email,
+		arg.Password,
+		arg.ProfilePicture,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.ProfilePicture,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

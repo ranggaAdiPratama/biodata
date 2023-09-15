@@ -5,6 +5,7 @@ CREATE TABLE
         "name" varchar NOT NULL,
         "email" varchar UNIQUE NOT NULL,
         "password" varchar NOT NULL,
+        "profile_picture" varchar,
         "created_at" timestamp NOT NULL DEFAULT (now()),
         "updated_at" timestamp
     );
