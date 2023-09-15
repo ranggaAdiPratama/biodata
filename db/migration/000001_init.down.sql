@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS hobbies;
+
+DROP TABLE IF EXISTS users;
