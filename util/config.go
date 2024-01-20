@@ -10,11 +10,12 @@ import (
 
 // SECTION type Config struct: struck isi config
 type Config struct {
-	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
-	DBDriver            string        `mapstructure:"DB_DRIVER"`
-	DBSource            string        `mapstructure:"DB_SOURCE"`
-	ServerAddress       string        `mapstructure:"SERVER_ADDRESS"`
-	TokenSymetricKey    string        `mapstructure:"TOKEN_SYMETRIC_KEY"`
+	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	DBDriver             string        `mapstructure:"DB_DRIVER"`
+	DBSource             string        `mapstructure:"DB_SOURCE"`
+	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
+	ServerAddress        string        `mapstructure:"SERVER_ADDRESS"`
+	TokenSymetricKey     string        `mapstructure:"TOKEN_SYMETRIC_KEY"`
 }
 
 // !SECTION type Config struct: struck isi config
