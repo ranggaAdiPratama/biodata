@@ -13,7 +13,9 @@ import (
 const createUser = `-- name: CreateUser :one
 
 INSERT INTO
-    users (username, name, email, password)
+    users (
+        username, name, email, password
+    )
 VALUES ($1, $2, $3, $4) RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
 `
 
@@ -31,6 +33,27 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.Password,
 	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.ProfilePicture,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getAllUser = `-- name: GetAllUser :one
+
+SELECT id, username, name, email, password, profile_picture, created_at, updated_at FROM users ORDER BY id
+`
+
+func (q *Queries) GetAllUser(ctx context.Context) (User, error) {
+	row := q.db.QueryRowContext(ctx, getAllUser)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -87,20 +110,42 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 	return i, err
 }
 
+const getUserForUpdate = `-- name: GetUserForUpdate :one
+
+SELECT id, username, name, email, password, profile_picture, created_at, updated_at FROM users WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE
+`
+
+func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserForUpdate, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.ProfilePicture,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateUser = `-- name: UpdateUser :one
 
-INSERT INTO
-    users (
-        username,
-        name,
-        email,
-        password,
-        profile_picture
-    )
-VALUES ($1, $2, $3, $4, $5) RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
+UPDATE users
+SET
+    username = $2,
+    name = $3,
+    email = $4,
+    password = $5,
+    profile_picture = $6
+WHERE
+    id = $1 RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
 `
 
 type UpdateUserParams struct {
+	ID             int64          `json:"id"`
 	Username       string         `json:"username"`
 	Name           string         `json:"name"`
 	Email          string         `json:"email"`
@@ -110,6 +155,7 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.ID,
 		arg.Username,
 		arg.Name,
 		arg.Email,

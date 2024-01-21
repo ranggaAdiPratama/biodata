@@ -30,11 +30,11 @@ func TestMeApi(t *testing.T) {
 		{
 			name: "OK",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.ID, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUserByUsername(gomock.Any(), user.Username).
+					GetUser(gomock.Any(), user.ID).
 					Times(1).
 					Return(user, nil)
 			},
@@ -45,11 +45,11 @@ func TestMeApi(t *testing.T) {
 		{
 			name: "InternalUserError",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.ID, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUserByUsername(gomock.Any(), gomock.Any()).
+					GetUser(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.User{}, sql.ErrConnDone)
 			},
@@ -63,7 +63,7 @@ func TestMeApi(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetUserByUsername(gomock.Any(), gomock.Any()).
+					GetUser(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {

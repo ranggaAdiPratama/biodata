@@ -10,7 +10,7 @@ import (
 func (server *Server) me(ctx *gin.Context) {
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
-	me, err := server.store.GetUserByUsername(ctx, authPayload.Username)
+	me, err := server.store.GetUser(ctx, authPayload.UserId)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))

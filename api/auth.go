@@ -125,6 +125,7 @@ func (server *Server) login(ctx *gin.Context) {
 
 	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
+		user.ID,
 		server.config.AccessTokenDuration,
 	)
 
@@ -135,6 +136,7 @@ func (server *Server) login(ctx *gin.Context) {
 
 	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
+		user.ID,
 		server.config.RefreshTokenDuration,
 	)
 

@@ -14,9 +14,11 @@ type Querier interface {
 	CreateHobby(ctx context.Context, arg CreateHobbyParams) (Hobby, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteHobby(ctx context.Context, id int64) error
+	GetAllUser(ctx context.Context) (User, error)
 	GetHobby(ctx context.Context, userID int64) (Hobby, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetUserForUpdate(ctx context.Context, id int64) (User, error)
 	UpdateHobby(ctx context.Context, arg UpdateHobbyParams) (Hobby, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }

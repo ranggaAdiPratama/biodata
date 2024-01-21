@@ -17,12 +17,13 @@ var (
 type Payload struct {
 	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username"`
+	UserId    int64     `json:"user_id"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `jsom:"expired_at"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
-func NewPayload(username string, duration time.Duration) (*Payload, error) {
+func NewPayload(username string, user_id int64, duration time.Duration) (*Payload, error) {
 	tokenID, err := uuid.NewRandom()
 
 	if err != nil {
@@ -32,6 +33,7 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	payload := &Payload{
 		ID:        tokenID,
 		Username:  username,
+		UserId:    user_id,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}

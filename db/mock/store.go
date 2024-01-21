@@ -109,6 +109,21 @@ func (mr *MockStoreMockRecorder) DeleteHobby(arg0, arg1 interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteHobby", reflect.TypeOf((*MockStore)(nil).DeleteHobby), arg0, arg1)
 }
 
+// GetAllUser mocks base method.
+func (m *MockStore) GetAllUser(arg0 context.Context) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllUser", arg0)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllUser indicates an expected call of GetAllUser.
+func (mr *MockStoreMockRecorder) GetAllUser(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUser", reflect.TypeOf((*MockStore)(nil).GetAllUser), arg0)
+}
+
 // GetHobby mocks base method.
 func (m *MockStore) GetHobby(arg0 context.Context, arg1 int64) (db.Hobby, error) {
 	m.ctrl.T.Helper()
@@ -152,6 +167,21 @@ func (m *MockStore) GetUserByUsername(arg0 context.Context, arg1 string) (db.Use
 func (mr *MockStoreMockRecorder) GetUserByUsername(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockStore)(nil).GetUserByUsername), arg0, arg1)
+}
+
+// GetUserForUpdate mocks base method.
+func (m *MockStore) GetUserForUpdate(arg0 context.Context, arg1 int64) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserForUpdate", arg0, arg1)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserForUpdate indicates an expected call of GetUserForUpdate.
+func (mr *MockStoreMockRecorder) GetUserForUpdate(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserForUpdate", reflect.TypeOf((*MockStore)(nil).GetUserForUpdate), arg0, arg1)
 }
 
 // UpdateHobby mocks base method.
