@@ -17,15 +17,15 @@ Project ini merupakan project kegabutan sambil menunggu adanya pekerjaan yang me
 1. ubah path di go mod
 2. ubah isi dari app.env sesuai dengan url db kalian
 3. ubah path yang ada di makefile
+4. install gin (github.com/codegangsta/gin@latest) gunakan go install bukan go get karena gin ini bukan framework
 
 # Rencana fitur
 
-1. auth
-2. listing data
-3. relational data
-4. db transaction
-5. upload foto
-6. data beranak baik raw atau form data
+1. listing data
+2. relational data
+3. db transaction
+4. upload foto
+5. data beranak baik raw atau form data
 
 postman json akan dimasukan ke folder public
 

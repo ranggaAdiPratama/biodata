@@ -16,6 +16,87 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestListUser(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	user, _ := randomUser(t)
+
+	testCases := []struct {
+		name          string
+		setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(recoder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.ID, time.Minute)
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					GetAllUser(gomock.Any()).
+					Times(1).
+					Return(user, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+		{
+			name: "InternalUserError",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				AddAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, user.ID, time.Minute)
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					GetAllUser(gomock.Any()).
+					Times(1).
+					Return(db.User{}, sql.ErrConnDone)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "NoAuthorization",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					GetAllUser(gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+
+			server := NewTestServer(t, store)
+			recorder := httptest.NewRecorder()
+
+			url := "/api/users"
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			tc.setupAuth(t, request, server.tokenMaker)
+
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+
+	}
+}
 func TestMeApi(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

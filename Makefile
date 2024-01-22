@@ -1,6 +1,9 @@
 createdb:
 	docker exec -it postgres16 createdb --username=rangga --owner=rangga biodata
 
+dev:
+	gin run main.go
+
 dropdb:
 	docker exec -it postgres16 dropdb biodata
 
@@ -31,6 +34,6 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: createdb dropdb migrateup migrateup1 migratedown migratedown1 mock postgres server sqlc test
+.PHONY: createdb dev dropdb migrateup migrateup1 migratedown migratedown1 mock postgres server sqlc test
 
 # migrate create -dir db/migration -ext sql -seq add_user_detail

@@ -46,6 +46,8 @@ func (server *Server) setupRouter() {
 	authRoutes := router.Group("/api").Use(authMiddleware(server.tokenMaker))
 
 	authRoutes.GET("/me", server.me)
+	authRoutes.GET("/export/user", server.exporttoExcel)
+	authRoutes.GET("/users", server.index)
 	// authRoutes.GET("/accounts/:id", server.getAccount)
 
 	apiRoutes := router.Group("/api")
