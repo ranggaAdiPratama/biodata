@@ -5,13 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/ranggaAdiPratama/go_biodata/db/sqlc"
 	"github.com/ranggaAdiPratama/go_biodata/token"
 	"github.com/ranggaAdiPratama/go_biodata/util"
 )
 
 func (server *Server) index(ctx *gin.Context) {
-	users, err := server.store.GetAllUser(ctx)
+	entries, err := server.store.GetAllUser(ctx)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -19,7 +18,34 @@ func (server *Server) index(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, users)
+	users := make(map[int]map[string]interface{})
+
+	for key, value := range entries {
+		var profilePicture string
+
+		if value.ProfilePicture.Valid {
+			profilePicture = value.ProfilePicture.String
+		} else {
+			profilePicture = ""
+		}
+
+		users[key] = map[string]interface{}{
+			"id":              value.ID,
+			"username":        value.Username,
+			"name":            value.Name,
+			"email":           value.Email,
+			"profile_picture": profilePicture,
+			"created_at":      value.CreatedAt.Format("2006-01-02 15:04:05"),
+		}
+	}
+
+	rsp := userListResponse{
+		Status:  http.StatusOK,
+		Message: "User list retrieved",
+		Data:    users,
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 func (server *Server) exporttoExcel(ctx *gin.Context) {
@@ -31,13 +57,11 @@ func (server *Server) exporttoExcel(ctx *gin.Context) {
 		return
 	}
 
-	users := []db.User{entries}
-
-	userCount := util.CountUserDbStructs(users)
+	userCount := util.CountUserDbStructs(entries)
 
 	fmt.Printf("users are %d", userCount)
 
-	ctx.JSON(http.StatusOK, users)
+	ctx.JSON(http.StatusOK, entries)
 }
 
 func (server *Server) me(ctx *gin.Context) {
@@ -51,12 +75,10 @@ func (server *Server) me(ctx *gin.Context) {
 		return
 	}
 
-	rsp := userResponse{
-		ID:        me.ID,
-		Username:  me.Username,
-		Name:      me.Name,
-		Email:     me.Email,
-		CreatedAt: me.CreatedAt,
+	rsp := meResponse{
+		Status:  http.StatusOK,
+		Message: "User list retrieved",
+		Data:    newUserDetailResponse(me),
 	}
 
 	ctx.JSON(http.StatusOK, rsp)

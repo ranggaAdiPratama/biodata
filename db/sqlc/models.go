@@ -5,6 +5,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -13,16 +14,16 @@ type Hobby struct {
 	UserID    int64        `json:"user_id"`
 	Name      string       `json:"name"`
 	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
 type User struct {
-	ID             int64          	`json:"id"`
-	Username       string         	`json:"username"`
-	Name           string         	`json:"name"`
-	Email          string         	`json:"email"`
-	Password       string         	`json:"password"`
-	ProfilePicture *string			`json:"profile_picture"`
-	CreatedAt      time.Time      	`json:"created_at"`
-	UpdatedAt      *time.Time   	`json:"updated_at"`
+	ID             int64          `json:"id"`
+	Username       string         `json:"username"`
+	Name           string         `json:"name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	ProfilePicture sql.NullString `json:"profile_picture"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      sql.NullTime   `json:"updated_at"`
 }

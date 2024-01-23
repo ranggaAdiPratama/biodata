@@ -47,25 +47,41 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const getAllUser = `-- name: GetAllUser :one
+const getAllUser = `-- name: GetAllUser :many
 
 SELECT id, username, name, email, password, profile_picture, created_at, updated_at FROM users ORDER BY id
 `
 
-func (q *Queries) GetAllUser(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, getAllUser)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Name,
-		&i.Email,
-		&i.Password,
-		&i.ProfilePicture,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) GetAllUser(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Name,
+			&i.Email,
+			&i.Password,
+			&i.ProfilePicture,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one

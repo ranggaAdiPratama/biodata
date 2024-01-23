@@ -53,6 +53,7 @@ func (server *Server) setupRouter() {
 	apiRoutes := router.Group("/api")
 
 	apiRoutes.POST("/auth/login", server.login)
+	apiRoutes.POST("/auth/refresh", server.refreshToken)
 	apiRoutes.POST("/auth/register", server.register)
 
 	server.router = router

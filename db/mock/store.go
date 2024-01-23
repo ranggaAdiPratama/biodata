@@ -110,10 +110,10 @@ func (mr *MockStoreMockRecorder) DeleteHobby(arg0, arg1 interface{}) *gomock.Cal
 }
 
 // GetAllUser mocks base method.
-func (m *MockStore) GetAllUser(arg0 context.Context) (db.User, error) {
+func (m *MockStore) GetAllUser(arg0 context.Context) ([]db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllUser", arg0)
-	ret0, _ := ret[0].(db.User)
+	ret0, _ := ret[0].([]db.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
