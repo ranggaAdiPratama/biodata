@@ -27,7 +27,14 @@ SET
     username = $2,
     name = $3,
     email = $4,
-    password = $5,
-    profile_picture = $6
+    profile_picture = $5,
+    updated_at = $6
+WHERE
+    id = $1 RETURNING *;
+
+-- name: UpdateUserPassword :one
+
+UPDATE users
+SET password = $2, updated_at = $3
 WHERE
     id = $1 RETURNING *;

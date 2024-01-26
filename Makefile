@@ -1,3 +1,5 @@
+DB_URL=postgresql://rangga:mitsuha@localhost:5432/biodata?sslmode=disable
+
 createdb:
 	docker exec -it postgres16 createdb --username=rangga --owner=rangga biodata
 
@@ -8,16 +10,16 @@ dropdb:
 	docker exec -it postgres16 dropdb biodata
 
 migrateup:
-	migrate -path db/migration -database "postgresql://rangga:mitsuha@localhost:5432/biodata?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 migrateup1:
-	migrate -path db/migration -database "postgresql://rangga:mitsuha@localhost:5432/biodata?sslmode=disable" -verbose up 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "postgresql://rangga:mitsuha@localhost:5432/biodata?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 migratedown1:
-	migrate -path db/migration -database "postgresql://rangga:mitsuha@localhost:5432/biodata?sslmode=disable" -verbose down 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/ranggaAdiPratama/go_biodata/db/sqlc Store

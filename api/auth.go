@@ -61,7 +61,6 @@ func (server *Server) login(ctx *gin.Context) {
 	}
 
 	dataLogin := loginDataResponse{
-		StatusCode:            http.StatusOK,
 		AccessToken:           accessToken,
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,
@@ -131,7 +130,6 @@ func (server *Server) refreshToken(ctx *gin.Context) {
 	}
 
 	dataRefresh := loginDataResponse{
-		StatusCode:            http.StatusOK,
 		AccessToken:           accessToken,
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,

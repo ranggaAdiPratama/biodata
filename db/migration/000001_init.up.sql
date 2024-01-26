@@ -1,5 +1,5 @@
 CREATE TABLE "users" (
-    "id" bigserial PRIMARY KEY, "username" varchar UNIQUE NOT NULL, "name" varchar NOT NULL, "email" varchar UNIQUE NOT NULL, "password" varchar NOT NULL, "profile_picture" varchar, "created_at" timestamp NOT NULL DEFAULT(now()), "updated_at" timestamp
+    "id" bigserial PRIMARY KEY, "username" varchar UNIQUE NOT NULL, "name" varchar NOT NULL, "email" varchar UNIQUE NOT NULL, "password" varchar NOT NULL, "profile_picture" varchar NULL, "created_at" timestamp NOT NULL DEFAULT(now()), "updated_at" timestamp NULL
 );
 
 CREATE TABLE "hobbies" (
@@ -17,4 +17,7 @@ INSERT INTO
     )
 VALUES (
         1, 'rangga', 'Rangga Adi Pratama', 'masterrangga@gmail.com', '$2a$10$nYJnqTID3BLwcEZICroXnOj37Lt1gbEVppPlvnNdSsc2CFbNpkbJ2', NULL, '2024-01-21 13:46:27.463394', NULL
-    );
+    ),
+    (
+        2, 'mitsuha', 'Mitsuha Miyamizu', 'mitsuha@gmail.com', '$2a$10$ibz7oLoKG4BpHEHOn8JAQeuk/GDlgTikYxIh1YpvvOXg7eQABvlWC', NULL, '2024-01-25 06:39:24.665504', NULL
+    )

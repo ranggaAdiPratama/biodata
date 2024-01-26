@@ -17,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"rangga\",\r\n    \"name\":\"Rangga Adi Pratama\",\r\n    \"password\":\"mitsuha\",\r\n    \"email\":\"masterrangga@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"username\":\"mitsuha\",\r\n    \"name\":\"Mitsuha Miyamizu\",\r\n    \"password\":\"rangga\",\r\n    \"email\":\"mitsuha@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -85,7 +85,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"if(jsonData.status == 200) {\r",
+									"postman.setEnvironmentVariable(\"authToken\", jsonData.data.access_token);\r",
+									"postman.setEnvironmentVariable(\"refreshToken\", jsonData.data.refresh_token);\r",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -234,6 +239,66 @@
 							"raw": "{{url}}users",
 							"host": [
 								"{{url}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Rangga Adi Pratama",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "rangga",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "masterrangga@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "profile_picture",
+									"type": "file",
+									"src": "/C:/Users/Rangga/Pictures/GI team.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}profile",
+							"host": [
+								"{{url}}profile"
 							]
 						}
 					},

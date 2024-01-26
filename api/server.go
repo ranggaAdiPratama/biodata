@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/ranggaAdiPratama/go_biodata/db/sqlc"
@@ -48,6 +49,7 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/me", server.me)
 	authRoutes.GET("/export/user", server.exporttoExcel)
 	authRoutes.GET("/users", server.index)
+	authRoutes.POST("/profile", server.updateProfile)
 	// authRoutes.GET("/accounts/:id", server.getAccount)
 
 	apiRoutes := router.Group("/api")
@@ -64,8 +66,18 @@ func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
 
-func errorResponse(err error) gin.H {
-	return gin.H{
-		"error": err.Error(),
+func errorResponsewithString(msg string) errorDataResponse {
+	return errorDataResponse{
+		Status:  http.StatusInternalServerError,
+		Message: "Error",
+		Data:    msg,
+	}
+}
+
+func errorResponse(err error) errorDataResponse {
+	return errorDataResponse{
+		Status:  http.StatusInternalServerError,
+		Message: "Error",
+		Data:    err.Error(),
 	}
 }

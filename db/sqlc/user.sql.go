@@ -154,8 +154,8 @@ SET
     username = $2,
     name = $3,
     email = $4,
-    password = $5,
-    profile_picture = $6
+    profile_picture = $5,
+    updated_at = $6
 WHERE
     id = $1 RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
 `
@@ -165,8 +165,8 @@ type UpdateUserParams struct {
 	Username       string         `json:"username"`
 	Name           string         `json:"name"`
 	Email          string         `json:"email"`
-	Password       string         `json:"password"`
 	ProfilePicture sql.NullString `json:"profile_picture"`
+	UpdatedAt      sql.NullTime   `json:"updated_at"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -175,9 +175,39 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Username,
 		arg.Name,
 		arg.Email,
-		arg.Password,
 		arg.ProfilePicture,
+		arg.UpdatedAt,
 	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.ProfilePicture,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :one
+
+UPDATE users
+SET password = $2, updated_at = $3
+WHERE
+    id = $1 RETURNING id, username, name, email, password, profile_picture, created_at, updated_at
+`
+
+type UpdateUserPasswordParams struct {
+	ID        int64        `json:"id"`
+	Password  string       `json:"password"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.ID, arg.Password, arg.UpdatedAt)
 	var i User
 	err := row.Scan(
 		&i.ID,
