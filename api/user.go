@@ -98,12 +98,6 @@ func (server *Server) me(ctx *gin.Context) {
 func (server *Server) updateProfile(ctx *gin.Context) {
 	var req updateProfileRequest
 
-	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-
-		return
-	}
-
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
 	users, err := server.store.GetAllUser(ctx)
@@ -114,16 +108,40 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 		return
 	}
 
+	me, err := server.store.GetUser(ctx, authPayload.UserId)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+
+		return
+	}
+
+	if req.Name == "" {
+		req.Name = me.Name
+	}
+
+	if req.Email == "" {
+		req.Email = me.Email
+	}
+
+	if req.Username == "" {
+		req.Username = me.Username
+	}
+
 	userEmailExists := false
 	userNameExists := false
 
 	for _, value := range users {
-		if value.Username == req.Username && authPayload.UserId != value.ID {
-			userNameExists = true
+		if req.Username != me.Username {
+			if value.Username == req.Username && authPayload.UserId != value.ID {
+				userNameExists = true
+			}
 		}
 
-		if value.Email == req.Email && authPayload.UserId != value.ID {
-			userEmailExists = true
+		if req.Email != me.Email {
+			if value.Email == req.Email && authPayload.UserId != value.ID {
+				userEmailExists = true
+			}
 		}
 	}
 
@@ -140,14 +158,6 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 	}
 
 	file, err := ctx.FormFile("profile_picture")
-
-	me, err := server.store.GetUser(ctx, authPayload.UserId)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-
-		return
-	}
 
 	if err != nil {
 		profilePicture := me.ProfilePicture

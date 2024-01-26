@@ -20,9 +20,9 @@ type registerRequest struct {
 // !SECTION auth
 // SECTION user
 type updateProfileRequest struct {
-	Name     string `form:"name" binding:"required"`
-	Username string `form:"username" binding:"required,alphanum"`
-	Email    string `form:"email" binding:"required,email"`
+	Name     string `form:"name"`
+	Username string `form:"username"`
+	Email    string `form:"email"`
 }
 
 // !SECTION user
