@@ -92,6 +92,12 @@ type userListResponse struct {
 	Data    map[int]map[string]interface{} `json:"data"`
 }
 
+type userExportResponse struct {
+	Status  int64  `json:"status"`
+	Message string `json:"message"`
+	Data    string `json:"data"`
+}
+
 func newUserDetailResponse(user db.User) userDetailResponse {
 	var profilePicture string
 

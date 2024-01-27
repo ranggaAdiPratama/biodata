@@ -3,9 +3,11 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
 	db "github.com/ranggaAdiPratama/go_biodata/db/sqlc"
 	"github.com/ranggaAdiPratama/go_biodata/token"
@@ -28,7 +30,7 @@ func (server *Server) index(ctx *gin.Context) {
 		var updatedAt string
 
 		if value.ProfilePicture.Valid {
-			profilePicture = value.ProfilePicture.String
+			profilePicture = "/public/images/users/" + value.ProfilePicture.String
 		} else {
 			profilePicture = ""
 		}
@@ -44,7 +46,7 @@ func (server *Server) index(ctx *gin.Context) {
 			"username":        value.Username,
 			"name":            value.Name,
 			"email":           value.Email,
-			"profile_picture": "/public/images/users/" + profilePicture,
+			"profile_picture": profilePicture,
 			"created_at":      value.CreatedAt.Format("2006-01-02 15:04:05"),
 			"updated_at":      updatedAt,
 		}
@@ -72,7 +74,41 @@ func (server *Server) exporttoExcel(ctx *gin.Context) {
 
 	fmt.Printf("users are %d", userCount)
 
-	ctx.JSON(http.StatusOK, entries)
+	xlsx := excelize.NewFile()
+
+	sheet1Name := "Sheet One"
+
+	xlsx.SetSheetName(xlsx.GetSheetName(1), sheet1Name)
+
+	xlsx.SetCellValue(sheet1Name, "A1", "Name")
+	xlsx.SetCellValue(sheet1Name, "B1", "Username")
+	xlsx.SetCellValue(sheet1Name, "C1", "Email")
+
+	err = xlsx.AutoFilter(sheet1Name, "A1", "C1", "")
+
+	if err != nil {
+		log.Fatal("ERROR", err.Error())
+	}
+
+	for i, value := range entries {
+		xlsx.SetCellValue(sheet1Name, fmt.Sprintf("A%d", i+2), value.Name)
+		xlsx.SetCellValue(sheet1Name, fmt.Sprintf("B%d", i+2), value.Username)
+		xlsx.SetCellValue(sheet1Name, fmt.Sprintf("C%d", i+2), value.Email)
+	}
+
+	err = xlsx.SaveAs("public/xlsxs/file1.xlsx")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rsp := userExportResponse{
+		Status:  http.StatusOK,
+		Message: "Export success",
+		Data:    "/public/xlsxs/file1.xlsx",
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 func (server *Server) me(ctx *gin.Context) {
