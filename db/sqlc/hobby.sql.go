@@ -9,48 +9,16 @@ import (
 	"context"
 )
 
-const checkAllHobby = `-- name: CheckAllHobby :many
-
-SELECT id, user_id, name, created_at, updated_at FROM hobbies WHERE user_id = $1 ORDER BY name
-`
-
-func (q *Queries) CheckAllHobby(ctx context.Context, userID int64) ([]Hobby, error) {
-	rows, err := q.db.QueryContext(ctx, checkAllHobby, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Hobby{}
-	for rows.Next() {
-		var i Hobby
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const checkHobbyWithPage = `-- name: CheckHobbyWithPage :many
 
 SELECT id, user_id, name, created_at, updated_at
 FROM hobbies
-WHERE user_id = $1
+WHERE
+    user_id = $1
 ORDER BY name
 LIMIT $2
-OFFSET $3
+OFFSET
+    $3
 `
 
 type CheckHobbyWithPageParams struct {
@@ -121,13 +89,81 @@ func (q *Queries) DeleteHobby(ctx context.Context, id int64) error {
 	return err
 }
 
-const getHobby = `-- name: GetHobby :one
+const getHobby = `-- name: GetHobby :many
 
-SELECT id, user_id, name, created_at, updated_at FROM hobbies WHERE user_id = $1 LIMIT 1 FOR NO KEY UPDATE
+SELECT id, user_id, name, created_at, updated_at FROM hobbies ORDER BY id
 `
 
-func (q *Queries) GetHobby(ctx context.Context, userID int64) (Hobby, error) {
-	row := q.db.QueryRowContext(ctx, getHobby, userID)
+func (q *Queries) GetHobby(ctx context.Context) ([]Hobby, error) {
+	rows, err := q.db.QueryContext(ctx, getHobby)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Hobby{}
+	for rows.Next() {
+		var i Hobby
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getHobbyByUserId = `-- name: GetHobbyByUserId :many
+
+SELECT id, user_id, name, created_at, updated_at FROM hobbies WHERE user_id = $1 ORDER BY name
+`
+
+func (q *Queries) GetHobbyByUserId(ctx context.Context, userID int64) ([]Hobby, error) {
+	rows, err := q.db.QueryContext(ctx, getHobbyByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Hobby{}
+	for rows.Next() {
+		var i Hobby
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getHobbyForUpdate = `-- name: GetHobbyForUpdate :one
+
+SELECT id, user_id, name, created_at, updated_at FROM hobbies WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE
+`
+
+func (q *Queries) GetHobbyForUpdate(ctx context.Context, id int64) (Hobby, error) {
+	row := q.db.QueryRowContext(ctx, getHobbyForUpdate, id)
 	var i Hobby
 	err := row.Scan(
 		&i.ID,

@@ -13,6 +13,18 @@ type errorDataResponse struct {
 	Data    string `json:"data"`
 }
 
+type noDataResponse struct {
+	Status  int64            `json:"status"`
+	Message string           `json:"message"`
+	Data    map[int]struct{} `json:"data"`
+}
+
+type ListResponse struct {
+	Status  int64                          `json:"status"`
+	Message string                         `json:"message"`
+	Data    map[int]map[string]interface{} `json:"data"`
+}
+
 // !SECTION index
 // SECTION auth
 type loginDataResponse struct {
@@ -86,12 +98,6 @@ type userDetailAllResponse struct {
 	UpdatedAt      string    `json:"updated_at"`
 }
 
-type userListResponse struct {
-	Status  int64                          `json:"status"`
-	Message string                         `json:"message"`
-	Data    map[int]map[string]interface{} `json:"data"`
-}
-
 type userExportResponse struct {
 	Status  int64  `json:"status"`
 	Message string `json:"message"`
@@ -145,3 +151,25 @@ func UserDetailAllResponse(user db.User) userDetailAllResponse {
 }
 
 // !SECTION user
+// SECTION hobby
+type createdHobbyResponse struct {
+	Status  int64         `json:"status"`
+	Message string        `json:"message"`
+	Data    hobbyResponse `json:"data"`
+}
+
+type hobbyResponse struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func newHobbyResponse(hobby db.Hobby) hobbyResponse {
+	return hobbyResponse{
+		ID:        hobby.ID,
+		Name:      hobby.Name,
+		CreatedAt: hobby.CreatedAt,
+	}
+}
+
+// !SECTION hobby

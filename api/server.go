@@ -47,8 +47,10 @@ func (server *Server) setupRouter() {
 	authRoutes := router.Group("/api").Use(authMiddleware(server.tokenMaker))
 
 	authRoutes.GET("/me", server.me)
-	authRoutes.GET("/export/user", server.exporttoExcel)
-	authRoutes.GET("/users", server.index)
+	authRoutes.GET("/export/user", server.exportUsertoExcel)
+	authRoutes.GET("/my-hobby", server.myHobby)
+	authRoutes.GET("/users", server.userList)
+	authRoutes.POST("/hobby", server.storeHobby)
 	authRoutes.POST("/profile", server.updateProfile)
 	// authRoutes.GET("/accounts/:id", server.getAccount)
 

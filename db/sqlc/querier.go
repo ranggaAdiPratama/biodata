@@ -9,13 +9,14 @@ import (
 )
 
 type Querier interface {
-	CheckAllHobby(ctx context.Context, userID int64) ([]Hobby, error)
 	CheckHobbyWithPage(ctx context.Context, arg CheckHobbyWithPageParams) ([]Hobby, error)
 	CreateHobby(ctx context.Context, arg CreateHobbyParams) (Hobby, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteHobby(ctx context.Context, id int64) error
 	GetAllUser(ctx context.Context) ([]User, error)
-	GetHobby(ctx context.Context, userID int64) (Hobby, error)
+	GetHobby(ctx context.Context) ([]Hobby, error)
+	GetHobbyByUserId(ctx context.Context, userID int64) ([]Hobby, error)
+	GetHobbyForUpdate(ctx context.Context, id int64) (Hobby, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserForUpdate(ctx context.Context, id int64) (User, error)

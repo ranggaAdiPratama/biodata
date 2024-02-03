@@ -1,4 +1,7 @@
--- name: CheckAllHobby :many
+-- name: GetHobby :many
+
+SELECT * FROM hobbies ORDER BY id;
+-- name: GetHobbyByUserId :many
 
 SELECT * FROM hobbies WHERE user_id = $1 ORDER BY name;
 
@@ -6,18 +9,20 @@ SELECT * FROM hobbies WHERE user_id = $1 ORDER BY name;
 
 SELECT *
 FROM hobbies
-WHERE user_id = $1
+WHERE
+    user_id = $1
 ORDER BY name
 LIMIT $2
-OFFSET $3;
+OFFSET
+    $3;
 
 -- name: DeleteHobby :exec
 
 DELETE FROM hobbies WHERE id = $1;
 
--- name: GetHobby :one
+-- name: GetHobbyForUpdate :one
 
-SELECT * FROM hobbies WHERE user_id = $1 LIMIT 1 FOR NO KEY UPDATE;
+SELECT * FROM hobbies WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE;
 
 -- name: CreateHobby :one
 

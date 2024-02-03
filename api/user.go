@@ -14,7 +14,7 @@ import (
 	"github.com/ranggaAdiPratama/go_biodata/util"
 )
 
-func (server *Server) index(ctx *gin.Context) {
+func (server *Server) userList(ctx *gin.Context) {
 	entries, err := server.store.GetAllUser(ctx)
 
 	if err != nil {
@@ -52,7 +52,7 @@ func (server *Server) index(ctx *gin.Context) {
 		}
 	}
 
-	rsp := userListResponse{
+	rsp := ListResponse{
 		Status:  http.StatusOK,
 		Message: "User list retrieved",
 		Data:    users,
@@ -61,7 +61,7 @@ func (server *Server) index(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, rsp)
 }
 
-func (server *Server) exporttoExcel(ctx *gin.Context) {
+func (server *Server) exportUsertoExcel(ctx *gin.Context) {
 	entries, err := server.store.GetAllUser(ctx)
 
 	if err != nil {
@@ -133,6 +133,11 @@ func (server *Server) me(ctx *gin.Context) {
 
 func (server *Server) updateProfile(ctx *gin.Context) {
 	var req updateProfileRequest
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
@@ -225,6 +230,8 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 		}
 
 		ctx.JSON(http.StatusOK, rsp)
+
+		return
 	}
 
 	ext := util.GetFileExtension(file.Filename)
