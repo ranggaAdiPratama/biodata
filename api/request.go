@@ -28,11 +28,11 @@ type updateProfileRequest struct {
 // !SECTION user
 // SECTION hobby
 type hobbyRequest struct {
-	Name string `json:"name"`
+	Name []string `json:"name"`
 }
 
-type multipleHobbyRequest struct {
-	Name string `form:"name"`
-}
+// type multipleHobbyRequest struct {
+// 	Name string `form:"name"`
+// }
 
 // !SECTION hobby

@@ -1,13 +1,60 @@
 package api
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
 	db "github.com/ranggaAdiPratama/go_biodata/db/sqlc"
 	"github.com/ranggaAdiPratama/go_biodata/token"
 	"github.com/ranggaAdiPratama/go_biodata/util"
 )
+
+func (server *Server) exportHobbytoExcel(ctx *gin.Context) {
+	entries, err := server.store.GetHobbywithUser(ctx)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+
+		return
+	}
+
+	xlsx := excelize.NewFile()
+
+	sheet1Name := "Sheet One"
+
+	xlsx.SetSheetName(xlsx.GetSheetName(1), sheet1Name)
+
+	xlsx.SetCellValue(sheet1Name, "A1", "Name")
+	xlsx.SetCellValue(sheet1Name, "B1", "Hobby")
+
+	err = xlsx.AutoFilter(sheet1Name, "A1", "B1", "")
+
+	if err != nil {
+		log.Fatal("ERROR", err.Error())
+	}
+
+	for i, value := range entries {
+		xlsx.SetCellValue(sheet1Name, fmt.Sprintf("A%d", i+2), value.Name)
+		xlsx.SetCellValue(sheet1Name, fmt.Sprintf("B%d", i+2), value.User)
+	}
+
+	err = xlsx.SaveAs("public/xlsxs/hobby.xlsx")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rsp := exportHobbytoExcelResponse{
+		Status:  http.StatusOK,
+		Message: "Export success",
+		Data:    "/public/xlsxs/hobby.xlsx",
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
+}
 
 func (server *Server) myHobby(ctx *gin.Context) {
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
@@ -61,8 +108,6 @@ func (server *Server) myHobby(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
-
-	return
 }
 
 func (server *Server) storeHobby(ctx *gin.Context) {
@@ -82,41 +127,40 @@ func (server *Server) storeHobby(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
-	if util.CountHobbyDbStructs(hobbies) > 0 {
-		hobbyExists := false
+	for _, name := range req.Name {
+		if util.CountHobbyDbStructs(hobbies) > 0 {
+			hobbyExists := false
 
-		for _, value := range hobbies {
-			if req.Name == value.Name && authPayload.UserId == value.UserID {
-				hobbyExists = true
+			for _, value := range hobbies {
+				if name == value.Name && authPayload.UserId == value.UserID {
+					hobbyExists = true
+				}
+			}
+
+			if hobbyExists {
+				ctx.JSON(http.StatusInternalServerError, errorResponsewithString("Hobby is registered already"))
+
+				return
 			}
 		}
 
-		if hobbyExists {
-			ctx.JSON(http.StatusInternalServerError, errorResponsewithString("Hobby is registered already"))
+		arg := db.CreateHobbyParams{
+			Name:   name,
+			UserID: authPayload.UserId,
+		}
 
+		_, err := server.store.CreateHobby(ctx, arg)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
 	}
 
-	arg := db.CreateHobbyParams{
-		Name:   req.Name,
-		UserID: authPayload.UserId,
-	}
-
-	newHobby, err := server.store.CreateHobby(ctx, arg)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
 	rsp := createdHobbyResponse{
-		Status:  http.StatusOK,
+		Status:  http.StatusCreated,
 		Message: "Hobby created successfully",
-		Data:    newHobbyResponse(newHobby),
 	}
 
-	ctx.JSON(http.StatusOK, rsp)
-
-	return
+	ctx.JSON(http.StatusCreated, rsp)
 }

@@ -17,6 +17,7 @@ type Querier interface {
 	GetHobby(ctx context.Context) ([]Hobby, error)
 	GetHobbyByUserId(ctx context.Context, userID int64) ([]Hobby, error)
 	GetHobbyForUpdate(ctx context.Context, id int64) (Hobby, error)
+	GetHobbywithUser(ctx context.Context) ([]GetHobbywithUserRow, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserForUpdate(ctx context.Context, id int64) (User, error)

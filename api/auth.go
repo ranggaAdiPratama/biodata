@@ -75,7 +75,6 @@ func (server *Server) login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
-	return
 }
 
 func (server *Server) refreshToken(ctx *gin.Context) {
@@ -144,7 +143,6 @@ func (server *Server) refreshToken(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
-	return
 }
 
 func (server *Server) register(ctx *gin.Context) {

@@ -1,8 +1,14 @@
 -- name: GetHobby :many
 
 SELECT * FROM hobbies ORDER BY id;
--- name: GetHobbyByUserId :many
 
+-- name: GetHobbywithUser :many
+SELECT hobbies.name, users.name as user
+FROM hobbies
+    JOIN users ON hobbies.user_id = users.id
+ORDER BY users.name;
+
+-- name: GetHobbyByUserId :many
 SELECT * FROM hobbies WHERE user_id = $1 ORDER BY name;
 
 -- name: CheckHobbyWithPage :many

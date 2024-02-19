@@ -153,23 +153,14 @@ func UserDetailAllResponse(user db.User) userDetailAllResponse {
 // !SECTION user
 // SECTION hobby
 type createdHobbyResponse struct {
-	Status  int64         `json:"status"`
-	Message string        `json:"message"`
-	Data    hobbyResponse `json:"data"`
+	Status  int64  `json:"status"`
+	Message string `json:"message"`
 }
 
-type hobbyResponse struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-func newHobbyResponse(hobby db.Hobby) hobbyResponse {
-	return hobbyResponse{
-		ID:        hobby.ID,
-		Name:      hobby.Name,
-		CreatedAt: hobby.CreatedAt,
-	}
+type exportHobbytoExcelResponse struct {
+	Status  int64  `json:"status"`
+	Message string `json:"message"`
+	Data    string `json:"data"`
 }
 
 // !SECTION hobby

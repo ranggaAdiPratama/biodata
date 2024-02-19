@@ -124,7 +124,6 @@ func (q *Queries) GetHobby(ctx context.Context) ([]Hobby, error) {
 }
 
 const getHobbyByUserId = `-- name: GetHobbyByUserId :many
-
 SELECT id, user_id, name, created_at, updated_at FROM hobbies WHERE user_id = $1 ORDER BY name
 `
 
@@ -173,6 +172,41 @@ func (q *Queries) GetHobbyForUpdate(ctx context.Context, id int64) (Hobby, error
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getHobbywithUser = `-- name: GetHobbywithUser :many
+SELECT hobbies.name, users.name as user
+FROM hobbies
+    JOIN users ON hobbies.user_id = users.id
+ORDER BY users.name
+`
+
+type GetHobbywithUserRow struct {
+	Name string `json:"name"`
+	User string `json:"user"`
+}
+
+func (q *Queries) GetHobbywithUser(ctx context.Context) ([]GetHobbywithUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getHobbywithUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetHobbywithUserRow{}
+	for rows.Next() {
+		var i GetHobbywithUserRow
+		if err := rows.Scan(&i.Name, &i.User); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateHobby = `-- name: UpdateHobby :one

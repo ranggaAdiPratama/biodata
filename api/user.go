@@ -14,53 +14,6 @@ import (
 	"github.com/ranggaAdiPratama/go_biodata/util"
 )
 
-func (server *Server) userList(ctx *gin.Context) {
-	entries, err := server.store.GetAllUser(ctx)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-
-		return
-	}
-
-	users := make(map[int]map[string]interface{})
-
-	for key, value := range entries {
-		var profilePicture string
-		var updatedAt string
-
-		if value.ProfilePicture.Valid {
-			profilePicture = "/public/images/users/" + value.ProfilePicture.String
-		} else {
-			profilePicture = ""
-		}
-
-		if value.UpdatedAt.Valid {
-			updatedAt = value.UpdatedAt.Time.Format("2006-01-02 15:04:05")
-		} else {
-			updatedAt = ""
-		}
-
-		users[key] = map[string]interface{}{
-			"id":              value.ID,
-			"username":        value.Username,
-			"name":            value.Name,
-			"email":           value.Email,
-			"profile_picture": profilePicture,
-			"created_at":      value.CreatedAt.Format("2006-01-02 15:04:05"),
-			"updated_at":      updatedAt,
-		}
-	}
-
-	rsp := ListResponse{
-		Status:  http.StatusOK,
-		Message: "User list retrieved",
-		Data:    users,
-	}
-
-	ctx.JSON(http.StatusOK, rsp)
-}
-
 func (server *Server) exportUsertoExcel(ctx *gin.Context) {
 	entries, err := server.store.GetAllUser(ctx)
 
@@ -288,6 +241,53 @@ func (server *Server) updateProfile(ctx *gin.Context) {
 		Status:  http.StatusOK,
 		Message: "Profile updated successfully",
 		Data:    UserDetailAllResponse(me),
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
+}
+
+func (server *Server) userList(ctx *gin.Context) {
+	entries, err := server.store.GetAllUser(ctx)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+
+		return
+	}
+
+	users := make(map[int]map[string]interface{})
+
+	for key, value := range entries {
+		var profilePicture string
+		var updatedAt string
+
+		if value.ProfilePicture.Valid {
+			profilePicture = "/public/images/users/" + value.ProfilePicture.String
+		} else {
+			profilePicture = ""
+		}
+
+		if value.UpdatedAt.Valid {
+			updatedAt = value.UpdatedAt.Time.Format("2006-01-02 15:04:05")
+		} else {
+			updatedAt = ""
+		}
+
+		users[key] = map[string]interface{}{
+			"id":              value.ID,
+			"username":        value.Username,
+			"name":            value.Name,
+			"email":           value.Email,
+			"profile_picture": profilePicture,
+			"created_at":      value.CreatedAt.Format("2006-01-02 15:04:05"),
+			"updated_at":      updatedAt,
+		}
+	}
+
+	rsp := ListResponse{
+		Status:  http.StatusOK,
+		Message: "User list retrieved",
+		Data:    users,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymetricKey)
 
 	if err != nil {
-		return nil, fmt.Errorf("Cannot create token maker: %w", err)
+		return nil, err
 	}
 
 	server := &Server{
@@ -46,10 +45,27 @@ func (server *Server) setupRouter() {
 
 	authRoutes := router.Group("/api").Use(authMiddleware(server.tokenMaker))
 
+	// router.GET("/public/:dir/*asset", func(c *gin.Context) {
+	// 	dir := c.Param("dir")
+	// 	asset := c.Param("asset")
+
+	// 	if strings.TrimPrefix(asset, "/") == "" {
+	// 		c.AbortWithStatus(http.StatusNotFound)
+	// 		return
+	// 	}
+
+	// 	fullName := filepath.Join(dir, filepath.FromSlash(path.Clean("/"+asset)))
+
+	// 	c.File(fullName)
+	// })
+
+	router.Static("/public", "./public")
+
 	authRoutes.GET("/me", server.me)
 	authRoutes.GET("/export/user", server.exportUsertoExcel)
 	authRoutes.GET("/my-hobby", server.myHobby)
 	authRoutes.GET("/users", server.userList)
+	authRoutes.GET("/export/hobby", server.exportHobbytoExcel)
 	authRoutes.POST("/hobby", server.storeHobby)
 	authRoutes.POST("/profile", server.updateProfile)
 	// authRoutes.GET("/accounts/:id", server.getAccount)

@@ -21,9 +21,8 @@ Project ini merupakan project kegabutan sambil menunggu adanya pekerjaan yang me
 
 # Rencana fitur
 
-1. relational data
-2. db transaction
-3. data beranak baik raw atau form data
+1. db transaction
+2. data beranak baik raw atau form data
 
 # tolong
 
